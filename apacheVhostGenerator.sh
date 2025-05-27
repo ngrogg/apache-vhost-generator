@@ -282,6 +282,7 @@ function runProgram(){
     echo "" >> output/$siteDomain.conf
 
     #### LocationMatch blocks, adjust/expand as needed
+    echo "  # LocationMatch Blocks, adjust/expand as needed" >> output/$siteDomain.conf
     echo "  <LocationMatch \"/\.git\">" >> output/$siteDomain.conf
     echo "    require all denied" >> output/$siteDomain.conf
     echo "  </LocationMatch>" >> output/$siteDomain.conf
@@ -302,6 +303,7 @@ function runProgram(){
     echo "" >> output/$siteDomain.conf
 
     #### Enable Forward Proxying and Access Control for Reverse Proxy, disable if not needed.
+    echo "  # Enable Proxy, disable if not needed" >> output/$siteDomain.conf
     echo "  <Proxy *>" >> output/$siteDomain.conf
     echo "    Order deny,allow" >> output/$siteDomain.conf
     echo "    Allow from all" >> output/$siteDomain.conf
