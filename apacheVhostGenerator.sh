@@ -28,6 +28,9 @@ function helpFunction(){
     "* Designed for DEB/RPM servers only " \
     "* Saves to a locally created output folder" \
     "Usage, ./vhostGenerator.sh generate"
+    " " \
+    " " \
+    " " \
 }
 
 # Function to run program
@@ -63,8 +66,9 @@ function runProgram(){
     ## Questions for VirtualHost
     ### Domain
 	printf "%s\n" \
-	"${yellow}Site Domain?" \
+	"${yellow}What is the Domain?" \
 	"----------------------------------------------------" \
+	"Ex. rustyspoon.com" \
 	" " \
 	"Enter site domain to use:${normal}" \
 	" "
@@ -72,57 +76,60 @@ function runProgram(){
 
     ### WWW Redirect?
 	printf "%s\n" \
-	"${yellow}WWW Redirect" \
+	"${yellow}Is there a WWW Redirect?" \
 	"----------------------------------------------------" \
 	"WWW redirect for domain?" \
+	"This is not needed if there isn't a CNAME redirect." \
 	" " \
-	"Enter: 1 for yes or 2 for no${normal}" \
+	"Ex. www.rustyspoon.com would redirect to rustyspoon.com" \
+	" " \
+	"Enter: 1 for yes or 0 for no${normal}" \
 	" "
     read wwwRedirect
 
     ### HTTP -> HTTPS?
 	printf "%s\n" \
-	"${yellow}HTTP -> HTTPS Redirect?" \
+	"${yellow}Should HTTP traffice redirect to HTTPS?" \
 	"----------------------------------------------------" \
     "Redirect HTTP (port 80) traffic to HTTPS on (port 443)? " \
 	" " \
-	"Enter: 1 for yes or 2 for no${normal}" \
+	"Enter: 1 for yes or 0 for no${normal}" \
 	" "
     read httpRedirect
 
     ### WordPress site?
 	printf "%s\n" \
-	"${yellow}WordPress Site?" \
+	"${yellow}Is the site a WordPress Site?" \
 	"----------------------------------------------------" \
-    "Is site a WordPress site? " \
-    "Script will add security options in upload dir" \
+    "Script will add security options for upload dir" \
 	" " \
-	"Enter: 1 for yes or 2 for no${normal}" \
+	"Enter: 1 for yes or 0 for no${normal}" \
 	" "
     read wordpressSite
 
     ### Docroot defined?
 	printf "%s\n" \
-	"${yellow}Docroot?" \
+	"${yellow}Is there a Docroot?" \
 	"----------------------------------------------------" \
     "Will a Docroot be defined?" \
     "This option should not be used with Proxy Pass" \
 	" " \
 	"A Generic docroot will be defined " \
 	" " \
-	"Enter: 1 for yes or 2 for no${normal}" \
+	"Enter: 1 for yes or 0 for no${normal}" \
 	" "
     read docrootDefined
 
     ### Proxy Pass to another server?
 	printf "%s\n" \
-	"${yellow}" \
+	"${yellow}Is there a Proxy Pass?" \
 	"----------------------------------------------------" \
-    "Will traffic be Proxy Passed " \
+    "Will traffic be proxied to another server?" \
+	"This option should not be used with Docroot" \
 	" " \
 	"A Generic Proxy Pass will be defined " \
     " " \
-	"Enter: 1 for yes or 2 for no${normal}" \
+	"Enter: 1 for yes or 0 for no${normal}" \
 	" "
     read proxyPass
 
@@ -220,9 +227,9 @@ function runProgram(){
         echo "  ProxyRequests Off" >> output/$siteDomain.conf
         echo "  # Enable preserve host, helpful for generating proper responses and handling redirects" >> output/$siteDomain.conf
         echo "  ProxyPreserveHost on" >> output/$siteDomain.conf
-        echo "  # Proxy Pass to IP, update with IP as needed" >> output/$siteDomain.conf
+        echo "  # Proxy Pass to IP, TODO: update with IP as needed" >> output/$siteDomain.conf
         echo "  ProxyPass / https://SERVER_IP/ retry=0" >> output/$siteDomain.conf
-        echo "  # Proxy Pass Reverse Proxy, update with IP as needed" >> output/$siteDomain.conf
+        echo "  # Proxy Pass Reverse Proxy, TODO: update with IP as needed" >> output/$siteDomain.conf
         echo "  ProxyPassReverse / https://SERVER_IP/" >> output/$siteDomain.conf
     fi
 
