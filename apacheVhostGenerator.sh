@@ -70,19 +70,46 @@ function runProgram(){
 	printf "%s\n" \
 	"${yellow}" \
 	"----------------------------------------------------" \
-	"Enter:${normal}" \
+	"WWW redirect for domain?" \
+	"Enter: 1 for yes or 2 for no${normal}" \
 	" "
-    read junkInput
+    read wwwredirect
 
     ## HTTP -> HTTPS?
 	printf "%s\n" \
 	"${yellow}" \
 	"----------------------------------------------------" \
-	"Enter:${normal}" \
+    "Redirect HTTP (port 80) traffic to HTTPS on (port 443)? " \
+	"Enter: 1 for yes or 2 for no${normal}" \
 	" "
-    read junkInput
+    read httpredirect
 
-    ## Append above options to vhost
+    ## Begin HTTP Virtualhost section
+    ### If HTTP -> HTTPS = 1
+    if [[ $httpredirect -eq "1" ]]; then
+        echo "<VirtualHost $privateIP:80>" >> output/$siteDomain.conf
+        echo "  ServerName $siteDomain" >> output/siteDomain.conf
+
+        #### If WWW Redirect = 1
+        if [[ $wwwredirect -eq "1" ]]; then
+        echo "  ServerAlias www.$siteDomain" >> output/siteDomain.conf
+        fi
+
+        #### Redirect to HTTPS
+        echo "  # Use 302 for SEO" >> output/$siteDomain.conf
+        echo "  Redirect 302 / https://$siteDomain/" >> output/siteDomain.conf
+
+        #### Close HTTP Virtualhost section
+        echo "</VirtualHost>" >> output/$siteDomain.conf
+
+        #### Whitespace
+        echo "" >> output/siteDomain.conf
+    fi
+
+    ### Begin HTTPS Virtualhost section
+    echo "" >> output/siteDomain.conf
+    #### If WWW Redirect = 1
+    echo "" >> output/siteDomain.conf
 
     ## Add options
     ### Explanation of options
@@ -102,6 +129,7 @@ function runProgram(){
 	printf "%s\n" \
 	"${yellow}" \
 	"----------------------------------------------------" \
+	" " \
 	"Enter:${normal}" \
 	" "
     read junkInput
@@ -113,7 +141,8 @@ function runProgram(){
 	printf "%s\n" \
 	"${yellow}" \
 	"----------------------------------------------------" \
-	"Enter:${normal}" \
+	" " \
+	"Enter: 1 for yes or 2 for no${normal}" \
 	" "
     read junkInput
 
