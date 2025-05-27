@@ -41,11 +41,13 @@ function runProgram(){
             mkdir output
     fi
 
-    ## RPM or DEB based distro, self-signed SSL filepath
+    ## RPM or DEB based distro, assign filepaths based on output
 	if [[ -e /usr/bin/dnf ]]; then
 		apacheDir="/etc/httpd/"
+        logDir="/var/log/httpd/"
 	elif [[ -e /usr/bin/apt ]]; then
 		apacheDir="/etc/apache2"
+        logDir="/var/log/apache2"
 	else
 		#### This message shouldn't be reachable with our configs and may suggest a more serious issue
 		printf "%s\n" \
@@ -58,33 +60,72 @@ function runProgram(){
     ## Private IP to variable, filter private IP of server
     privateIP=$(hostname -i | awk '{print $1}')
 
-    ## Domain
+    ## Questions for VirtualHost
+    ### Domain
 	printf "%s\n" \
-	"${yellow}Site Domain" \
+	"${yellow}Site Domain?" \
 	"----------------------------------------------------" \
+	" " \
 	"Enter site domain to use:${normal}" \
 	" "
     read siteDomain
 
-    ## WWW Redirect?
+    ### WWW Redirect?
 	printf "%s\n" \
-	"${yellow}" \
+	"${yellow}WWW Redirect" \
 	"----------------------------------------------------" \
 	"WWW redirect for domain?" \
+	" " \
 	"Enter: 1 for yes or 2 for no${normal}" \
 	" "
-    read wwwredirect
+    read wwwRedirect
 
-    ## HTTP -> HTTPS?
+    ### HTTP -> HTTPS?
+	printf "%s\n" \
+	"${yellow}HTTP -> HTTPS Redirect?" \
+	"----------------------------------------------------" \
+    "Redirect HTTP (port 80) traffic to HTTPS on (port 443)? " \
+	" " \
+	"Enter: 1 for yes or 2 for no${normal}" \
+	" "
+    read httpRedirect
+
+    ### WordPress site?
+	printf "%s\n" \
+	"${yellow}WordPress Site?" \
+	"----------------------------------------------------" \
+    "Is site a WordPress site? " \
+    "Script will add security options in upload dir" \
+	" " \
+	"Enter: 1 for yes or 2 for no${normal}" \
+	" "
+    read wordpressSite
+
+    ### Docroot defined?
+	printf "%s\n" \
+	"${yellow}Docroot?" \
+	"----------------------------------------------------" \
+    "Will a Docroot be defined?" \
+    "This option should not be used with Proxy Pass" \
+	" " \
+	"A Generic docroot will be defined " \
+	" " \
+	"Enter: 1 for yes or 2 for no${normal}" \
+	" "
+    read docrootDefined
+
+    ### Proxy Pass to another server?
 	printf "%s\n" \
 	"${yellow}" \
 	"----------------------------------------------------" \
-    "Redirect HTTP (port 80) traffic to HTTPS on (port 443)? " \
+    "Will traffic be Proxy Passed " \
+	" " \
+	"A Generic Proxy Pass will be defined " \
+    " " \
 	"Enter: 1 for yes or 2 for no${normal}" \
 	" "
-    read httpredirect
+    read proxyPass
 
-    #TODO Change your output dir if desired
     ## Check for vhost with file name already, move to new name and disable old vhost if so
     if [[ -f output/$siteDomain.conf ]]; then
             mv output/$siteDomain.conf output/$siteDomain.$(date +%Y%m%d).conf
@@ -92,13 +133,13 @@ function runProgram(){
 
     ## Begin HTTP Virtualhost section
     ### If HTTP -> HTTPS = 1
-    if [[ $httpredirect -eq "1" ]]; then
+    if [[ $httpRedirect -eq "1" ]]; then
         echo "<VirtualHost $privateIP:80>" >> output/$siteDomain.conf
         echo "  ServerName $siteDomain" >> output/$siteDomain.conf
 
         #### If WWW Redirect = 1
-        if [[ $wwwredirect -eq "1" ]]; then
-        echo "  ServerAlias www.$siteDomain" >> output/$siteDomain.conf
+        if [[ $wwwRedirect -eq "1" ]]; then
+            echo "  ServerAlias www.$siteDomain" >> output/$siteDomain.conf
         fi
 
         #### Redirect to HTTPS
@@ -113,47 +154,168 @@ function runProgram(){
     fi
 
     ### Begin HTTPS Virtualhost section
-    echo "" >> output/$siteDomain.conf
+    echo "<VirtualHost $privateIP:443" >> output/$siteDomain.conf
+    echo "  ServerName $siteDomain" >> output/$siteDomain.conf
+
     #### If WWW Redirect = 1
+    if [[ $wwwRedirect -eq "1" ]]; then
+        echo "  ServerAlias www.$siteDomain" >> output/$siteDomain.conf
+    fi
+
+    #### Whitespace
     echo "" >> output/$siteDomain.conf
 
-    ## Add options
-    ### Explanation of options
+    ### Add options
+    #### Explanation of options
+    #### Do not follow simlinks (idea is to limit access to docroot)
+    #### Do not folow indexes (idea is to prevent directory listing from web)
+    echo "  # Add options" >> output/$siteDomain.conf
+    echo "  ## Explanation of options" >> output/$siteDomain.conf
+    echo "  ## Do not follow simlinks (idea is to limit access to docroot)" >> output/$siteDomain.conf
+    echo "  ## Do not folow indexes (idea is to prevent directory listing from web)" >> output/$siteDomain.conf
+    echo "  Options -FollowSymLinks -Indexes" >> output/$siteDomain.conf
 
-    ## Error logging
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
 
-    #TODO Replace with your own SSL if desired
-    ## Self-signed SSL
-    ### Created self-signed SSL directory based on RPM or DEB based distro
+    ### Apache logging
+    echo "  # Apache Error logging" >> output/$siteDomain.conf
+    echo "  ErrorLog $logDir/$siteDomain.error.log" >> output/$siteDomain.conf
+    echo "  # Apache Access logging" >> output/$siteDomain.conf
+    echo "  CustomLog $logDir/$siteDomain.access.log combined" >> output/$siteDomain.conf
 
-    #TODO Replace with your own protocols as needed
-    ### SSL Protocols
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
 
-    #TODO Replace with your own ciphers as desired
+    ### SSL Placeholder
+    echo "  #TODO Replace with correct SSL filepaths" >> output/$siteDomain.conf
+    echo "  SSLEngine on" >> output/$siteDomain.conf
+    echo "  SSLCertificateFile $apacheDir/path/to/certfile" >> output/$siteDomain.conf
+    echo "  SSLCertificateChainFile $apacheDir/path/to/chainfile" >> output/$siteDomain.conf
+    echo "  SSLCertificateKeyFile $apacheDir/path/to/keyfile" >> output/$siteDomain.conf
 
-    ## Proxy Pass to another server?
-	printf "%s\n" \
-	"${yellow}" \
-	"----------------------------------------------------" \
-	" " \
-	"Enter:${normal}" \
-	" "
-    read junkInput
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
 
-    ## Create a docroot for domain?
+    #TODO Replace with protocols as needed
+    #### SSL Protocols
+    echo "  # Allowed and Denied SSL Protocols, update as desired" >> output/$siteDomain.conf
+    echo "  SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1 +TLSv1.2 +TLSv1.3" >> output/$siteDomain.conf
 
-    ## WordPress?
-    ### WordPress upload directory
-	printf "%s\n" \
-	"${yellow}" \
-	"----------------------------------------------------" \
-	" " \
-	"Enter: 1 for yes or 2 for no${normal}" \
-	" "
-    read junkInput
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
 
-    #TODO Update your own security changes as needed
-    ## File security
+    #TODO Replace with ciphers as desired
+    #### SSL Ciphers
+    echo "  # Denied Ciphers, update as desired" >> output/$siteDomain.conf
+    echo "  SSLCipherSuite \"HIGH:!aNULL:!MD5:!3DES:!CAMELLIA:!AES128\"" >> output/$siteDomain.conf
+
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
+
+    ### Proxy Pass to another server?
+    if [[ $proxyPass -eq "1" ]]; then
+        echo "" >> output/$siteDomain.conf
+        echo "  # Disable ProxyRequests for security" >> output/$siteDomain.conf
+        echo "  ProxyRequests Off" >> output/$siteDomain.conf
+        echo "  # Enable preserve host, helpful for generating proper responses and handling redirects" >> output/$siteDomain.conf
+        echo "  ProxyPreserveHost on" >> output/$siteDomain.conf
+        echo "  # Proxy Pass to IP, update with IP as needed" >> output/$siteDomain.conf
+        echo "  ProxyPass / https://SERVER_IP/ retry=0" >> output/$siteDomain.conf
+        echo "  # Proxy Pass Reverse Proxy, update with IP as needed" >> output/$siteDomain.conf
+        echo "  ProxyPassReverse / https://SERVER_IP/" >> output/$siteDomain.conf
+    fi
+
+    ### Create a docroot for domain?
+    if [[ $docrootDefined -eq "1" ]]; then
+        echo "" >> output/$siteDomain.conf
+        echo "  #TODO Adjust Docroot as needed" >> output/$siteDomain.conf
+        echo "  DocumentRoot /var/www/$siteDomain" >> output/$siteDomain.conf
+        echo "  DirectoryIndex index.php index.html" >> output/$siteDomain.conf
+        echo "  # Docroot options, adjust as needed" >> output/$siteDomain.conf
+        echo "  <Directory /var/www/$siteDomain>" >> output/$siteDomain.conf
+        echo "    Options +FollowSymlinks -Indexes" >> output/$siteDomain.conf
+        echo "    AllowOverride All" >> output/$siteDomain.conf
+        echo "  </Directory>" >> output/$siteDomain.conf
+    fi
+
+    ### WordPress?
+    #### WordPress upload directory
+    if [[ $wordpressSite -eq "1" ]]; then
+        echo "" >> output/$siteDomain.conf
+        echo "  # Options to limit WordPress upload dir, adjust as needed" >> output/$siteDomain.conf
+        echo "  <Directory /var/www/$siteDomain/wp-content/uploads" >> output/$siteDomain.conf
+        echo "    AllowOverride None" >> output/$siteDomain.conf
+        echo "    SetHandler None" >> output/$siteDomain.conf
+        echo "    SetHandler default-handler" >> output/$siteDomain.conf
+        echo "    Options -ExecCGI" >> output/$siteDomain.conf
+        echo "    php_flag engine off" >> output/$siteDomain.conf
+        echo "    #TODO: Expand or limit as needed" >> output/$siteDomain.conf
+        echo "    RemoveHandler .cgi .php .php3 .php4 .php5 .php7 .php8 .phtml .pl .py .pyc .pyo .sh .bash .rb .exe .scr .dll .msi .jsp .asp .aspx .shtml .phar .jar .wsf" >> output/$siteDomain.conf
+        echo "  </Directory>" >> output/$siteDomain.conf
+    fi
+
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
+
+    #TODO Update security changes as needed
+    ### File security
+    #### FileMatch Blocks
+    echo "  #TODO Update Security Changes as needed" >> output/$siteDomain.conf
+    echo "  # FileMatch blocks, deny access to extensions" >> output/$siteDomain.conf
+    echo "  <FilesMatch \"\.(php|php[0-9]|phtml|phar|pl|py|sh|cgi|asp|aspx|jsp|jar|exe|dll|scr|msi|wsf)$\">" >> output/$siteDomain.conf
+    echo "    Order Allow,Deny" >> output/$siteDomain.conf
+    echo "    Deny from all" >> output/$siteDomain.conf
+    echo "  </FilesMatch>" >> output/$siteDomain.conf
+
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
+
+    #### Deny access to xmlrpc.php
+    echo "  # Deny access to xmlrpc.php" >> output/$siteDomain.conf
+    echo "  <files xmlrpc.php>" >> output/$siteDomain.conf
+    echo "    order allow,deny" >> output/$siteDomain.conf
+    echo "    deny from all" >> output/$siteDomain.conf
+    echo "  </files>" >> output/$siteDomain.conf
+
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
+
+    #### LocationMatch blocks, adjust/expand as needed
+    echo "  <LocationMatch \"/\.git\">" >> output/$siteDomain.conf
+    echo "    require all denied" >> output/$siteDomain.conf
+    echo "  </LocationMatch>" >> output/$siteDomain.conf
+    echo "  <LocationMatch \"/\.env\">" >> output/$siteDomain.conf
+    echo "    require all denied" >> output/$siteDomain.conf
+    echo "  </LocationMatch>" >> output/$siteDomain.conf
+    echo "  <LocationMatch  \"log(.*)\.txt$\">" >> output/$siteDomain.conf
+    echo "    require all denied" >> output/$siteDomain.conf
+    echo "  </LocationMatch>" >> output/$siteDomain.conf
+    echo "  <LocationMatch \"/\.sftp-config\.json\">" >> output/$siteDomain.conf
+    echo "    require all denied" >> output/$siteDomain.conf
+    echo "  </LocationMatch>" >> output/$siteDomain.conf
+    echo "  <LocationMatch \"/sftp-config\.json\">" >> output/$siteDomain.conf
+    echo "    require all denied" >> output/$siteDomain.conf
+    echo "  </LocationMatch>" >> output/$siteDomain.conf
+
+    #### Whitespace
+    echo "" >> output/$siteDomain.conf
+
+    #### Enable Forward Proxying and Access Control for Reverse Proxy, disable if not needed.
+    echo "  <Proxy *>" >> output/$siteDomain.conf
+    echo "    Order deny,allow" >> output/$siteDomain.conf
+    echo "    Allow from all" >> output/$siteDomain.conf
+    echo "  </Proxy>" >> output/$siteDomain.conf
+
+    ### Close HTTPS Virtualhost tag
+    echo "</VirtalHost>" >> output/$siteDomain.conf
+
+    ## Closing notes
+    printf "%s\n" \
+    "${green}VirtualHost generated" \
+    "----------------------------------------------------" \
+    "Check output dir" \
+    "Verify values correct before deploying VirtualHost${normal} "
 }
 
 # Main, read passed flags
