@@ -84,32 +84,38 @@ function runProgram(){
 	" "
     read httpredirect
 
+    #TODO Change your output dir if desired
+    ## Check for vhost with file name already, move to new name and disable old vhost if so
+    if [[ -f output/$siteDomain.conf ]]; then
+            mv output/$siteDomain.conf output/$siteDomain.$(date +%Y%m%d).conf
+    fi
+
     ## Begin HTTP Virtualhost section
     ### If HTTP -> HTTPS = 1
     if [[ $httpredirect -eq "1" ]]; then
         echo "<VirtualHost $privateIP:80>" >> output/$siteDomain.conf
-        echo "  ServerName $siteDomain" >> output/siteDomain.conf
+        echo "  ServerName $siteDomain" >> output/$siteDomain.conf
 
         #### If WWW Redirect = 1
         if [[ $wwwredirect -eq "1" ]]; then
-        echo "  ServerAlias www.$siteDomain" >> output/siteDomain.conf
+        echo "  ServerAlias www.$siteDomain" >> output/$siteDomain.conf
         fi
 
         #### Redirect to HTTPS
         echo "  # Use 302 for SEO" >> output/$siteDomain.conf
-        echo "  Redirect 302 / https://$siteDomain/" >> output/siteDomain.conf
+        echo "  Redirect 302 / https://$siteDomain/" >> output/$siteDomain.conf
 
         #### Close HTTP Virtualhost section
         echo "</VirtualHost>" >> output/$siteDomain.conf
 
         #### Whitespace
-        echo "" >> output/siteDomain.conf
+        echo "" >> output/$siteDomain.conf
     fi
 
     ### Begin HTTPS Virtualhost section
-    echo "" >> output/siteDomain.conf
+    echo "" >> output/$siteDomain.conf
     #### If WWW Redirect = 1
-    echo "" >> output/siteDomain.conf
+    echo "" >> output/$siteDomain.conf
 
     ## Add options
     ### Explanation of options
