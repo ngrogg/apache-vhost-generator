@@ -29,8 +29,12 @@ function helpFunction(){
     "* Saves to a locally created output folder" \
     "Usage, ./vhostGenerator.sh generate"
     " " \
+    "Script can also take answers to questions as arguments." \
+    "Usage. ./apache-vhost-generator.sh DOMAIN WWW_REDIRECT? HTTP_TO_HTTPS? WORDPRESS? DOCROOT? PROXY_PASS?" \
+    "Ex. ./apache-vhost-generator.sh generate rustyspoon.com 1 1 0 1 0" \
     " " \
-    " " \
+    "See README for breakdown of questions. " \
+    "If unsure, run guided script. "
 }
 
 # Function to run program
@@ -38,6 +42,14 @@ function runProgram(){
     printf "%s\n" \
     "Generate" \
     "----------------------------------------------------"
+
+    ## Variables
+    siteDomain=$1
+    wwwRedirect=$2
+    httpRedirect=$3
+    wordpressSite=$4
+    docrootDefined=$5
+    proxyPass=$6
 
     ## Check for output directory, create it if it doesn't exist
     if [[ ! -d output ]]; then
@@ -63,75 +75,107 @@ function runProgram(){
     ## Private IP to variable, filter private IP of server
     privateIP=$(hostname -i | awk '{print $1}')
 
-    ## Questions for VirtualHost
+    ## Questions for VirtualHost, all assume a flag wasn't passed
     ### Domain
-	printf "%s\n" \
-	"${yellow}What is the Domain?" \
-	"----------------------------------------------------" \
-	"Ex. rustyspoon.com" \
-	" " \
-	"Enter site domain to use:${normal}" \
-	" "
-    read siteDomain
+    if [[ -z $siteDomain ]]; then
+            printf "%s\n" \
+            "${yellow}What is the Domain?" \
+            "----------------------------------------------------" \
+            "Ex. rustyspoon.com" \
+            " " \
+            "Enter site domain to use:${normal}" \
+            " "
+            read siteDomain
+    fi
 
     ### WWW Redirect?
-	printf "%s\n" \
-	"${yellow}Is there a WWW Redirect?" \
-	"----------------------------------------------------" \
-	"WWW redirect for domain?" \
-	"This is not needed if there isn't a CNAME redirect." \
-	" " \
-	"Ex. www.rustyspoon.com would redirect to rustyspoon.com" \
-	" " \
-	"Enter: 1 for yes or 0 for no${normal}" \
-	" "
-    read wwwRedirect
+    if [[ -z $wwwRedirect ]]; then
+            printf "%s\n" \
+            "${yellow}Is there a WWW Redirect?" \
+            "----------------------------------------------------" \
+            "WWW redirect for domain?" \
+            "This is not needed if there isn't a CNAME redirect." \
+            " " \
+            "Ex. www.rustyspoon.com would redirect to rustyspoon.com" \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read wwwRedirect
+    fi
 
     ### HTTP -> HTTPS?
-	printf "%s\n" \
-	"${yellow}Should HTTP traffice redirect to HTTPS?" \
-	"----------------------------------------------------" \
-    "Redirect HTTP (port 80) traffic to HTTPS on (port 443)? " \
-	" " \
-	"Enter: 1 for yes or 0 for no${normal}" \
-	" "
-    read httpRedirect
+    if [[ -z $httpRedirect ]]; then
+            printf "%s\n" \
+            "${yellow}Should HTTP traffice redirect to HTTPS?" \
+            "----------------------------------------------------" \
+            "Redirect HTTP (port 80) traffic to HTTPS on (port 443)? " \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read httpRedirect
+    fi
 
     ### WordPress site?
-	printf "%s\n" \
-	"${yellow}Is the site a WordPress Site?" \
-	"----------------------------------------------------" \
-    "Script will add security options for upload dir" \
-	" " \
-	"Enter: 1 for yes or 0 for no${normal}" \
-	" "
-    read wordpressSite
+    if [[ -z $wordpressSite ]]; then
+            printf "%s\n" \
+            "${yellow}Is the site a WordPress Site?" \
+            "----------------------------------------------------" \
+            "Script will add security options for upload dir" \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read wordpressSite
+    fi
 
     ### Docroot defined?
-	printf "%s\n" \
-	"${yellow}Is there a Docroot?" \
-	"----------------------------------------------------" \
-    "Will a Docroot be defined?" \
-    "This option should not be used with Proxy Pass" \
-	" " \
-	"A Generic docroot will be defined " \
-	" " \
-	"Enter: 1 for yes or 0 for no${normal}" \
-	" "
-    read docrootDefined
+    if [[ -z $docrootDefined ]]; then
+            printf "%s\n" \
+            "${yellow}Is there a Docroot?" \
+            "----------------------------------------------------" \
+            "Will a Docroot be defined?" \
+            "This option should not be used with Proxy Pass" \
+            " " \
+            "A Generic docroot will be defined " \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read docrootDefined
+    fi
 
     ### Proxy Pass to another server?
-	printf "%s\n" \
-	"${yellow}Is there a Proxy Pass?" \
-	"----------------------------------------------------" \
-    "Will traffic be proxied to another server?" \
-	"This option should not be used with Docroot" \
-	" " \
-	"A Generic Proxy Pass will be defined " \
+    if [[ -z $proxyPass ]]; then
+            printf "%s\n" \
+            "${yellow}Is there a Proxy Pass?" \
+            "----------------------------------------------------" \
+            "Will traffic be proxied to another server?" \
+            "This option should not be used with Docroot" \
+            " " \
+            "A Generic Proxy Pass will be defined " \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read proxyPass
+    fi
+
+    ## Value Confirmation, last chance to bail out
+    printf "%s\n" \
+    "${yellow}IMPORTANT: Value Confirmation" \
+    "----------------------------------------------------" \
+    "Site Domain: " "$siteDomain" \
     " " \
-	"Enter: 1 for yes or 0 for no${normal}" \
-	" "
-    read proxyPass
+    "Should there be a WWW Redirect?" "$wwwRedirect" \
+    " " \
+    "Should there be a HTTP -> HTTPS Redirect?" "$httpRedirect" \
+    " " \
+    "Is site a WordPress site?" "$wordpressSite" \
+    " " \
+    "Should a Docroot be defined?" "$docrootDefined" \
+    " " \
+    "Should a Proxy Pass be defined?" "$proxyPass" \
+    " " \
+    "If all clear, press enter to proceed or ctrl-c to cancel${normal}" \
+    " "
+    read junkInput
 
     ## Check for vhost with file name already, move to new name and disable old vhost if so
     if [[ -f output/$siteDomain.conf ]]; then
@@ -348,7 +392,7 @@ case "$1" in
     printf "%s\n" \
     "Running script" \
     "----------------------------------------------------"
-    runProgram
+    runProgram $2 $3 $4 $5 $6 $7
     ;;
 *)
     printf "%s\n" \
