@@ -205,7 +205,7 @@ function runProgram(){
     fi
 
     ### Begin HTTPS Virtualhost section
-    echo "<VirtualHost $privateIP:443" >> output/$siteDomain.conf
+    echo "<VirtualHost $privateIP:443>" >> output/$siteDomain.conf
     echo "  ServerName $siteDomain" >> output/$siteDomain.conf
 
     #### If WWW Redirect = 1
