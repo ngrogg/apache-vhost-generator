@@ -27,7 +27,7 @@ function helpFunction(){
     "* Generate an Apache Vhost" \
     "* Designed for DEB/RPM servers only " \
     "* Saves to a locally created output folder" \
-    "Usage, ./vhostGenerator.sh generate"
+    "Usage, ./vhostGenerator.sh generate" \
     " " \
     "Script can also take answers to questions as arguments." \
     "Usage. ./apache-vhost-generator.sh DOMAIN WWW_REDIRECT? HTTP_TO_HTTPS? WORDPRESS? DOCROOT? PROXY_PASS?" \
@@ -132,10 +132,10 @@ function runProgram(){
             printf "%s\n" \
             "${yellow}Is there a Docroot?" \
             "----------------------------------------------------" \
-            "Will a Docroot be defined?" \
+            "Should a Docroot be defined?" \
             "This option should not be used with Proxy Pass" \
             " " \
-            "A Generic docroot will be defined " \
+            "A Generic docroot will be defined" \
             " " \
             "Enter: 1 for yes or 0 for no${normal}" \
             " "
