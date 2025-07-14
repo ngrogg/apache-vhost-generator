@@ -64,7 +64,7 @@ function runProgram(){
 		apacheDir="/etc/apache2"
         logDir="/var/log/apache2"
 	else
-		#### This message shouldn't be reachable with our configs and may suggest a more serious issue
+		### Script is designed for RPM/DEB servers.
 		printf "%s\n" \
 		"${red}ISSUE DETECTED - DNF/APT not found! "\
 		"----------------------------------------------------" \
@@ -219,7 +219,7 @@ function runProgram(){
     ### Add options
     #### Explanation of options
     #### Do not follow simlinks (idea is to limit access to docroot)
-    #### Do not folow indexes (idea is to prevent directory listing from web)
+    #### Do not follow indexes (idea is to prevent directory listing from web)
     echo "  # Add options" >> output/$siteDomain.conf
     echo "  ## Explanation of options" >> output/$siteDomain.conf
     echo "  ## Do not follow simlinks (idea is to limit access to docroot)" >> output/$siteDomain.conf

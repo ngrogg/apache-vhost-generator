@@ -48,7 +48,7 @@ Once the VirtualHost is generated at least the following items should be reviewe
   Adjust to whatever preferred docroot is used. <br>
   - **Docroot Options**, Some default Docroot options are put in place as well. These may also need updated depending on use case. <br>
 * **WordPress**, If WordPress option is used some default configurations are put in place for the uploads directory. <br>
-  These may be too restrictive or too loose depending on configuration requirements. <br>
+  These may require adjustment depending on configuration requirements. <br>
   The filepath is also based on the docroot configuration and may need reviewed as well. <br>
 * **File Security changes**, these are simple placeholders and cover a few encountered examples. <br>
-  These may or may be sufficient and should be adjusted before deployment. <br>
+  These may need adjusted and should be reviewed before deployment. <br>
