@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-# Vhost Generator
+# Apache Vhost Generator
 # BASH script for generating an Apache vhost
 # By Nicholas Grogg
 
@@ -27,11 +27,11 @@ function helpFunction(){
     "* Generate an Apache Vhost" \
     "* Designed for DEB/RPM servers only " \
     "* Saves to a locally created output folder" \
-    "Usage, ./vhostGenerator.sh generate" \
+    "Usage, ./apacheVhostGenerator.sh generate" \
     " " \
     "Script can also take answers to questions as arguments." \
-    "Usage. ./apache-vhost-generator.sh DOMAIN WWW_REDIRECT? HTTP_TO_HTTPS? WORDPRESS? DOCROOT? PROXY_PASS?" \
-    "Ex. ./apache-vhost-generator.sh generate rustyspoon.com 1 1 0 1 0" \
+    "Usage. ./apacheVhostGenerator.sh generate DOMAIN WWW_REDIRECT? HTTP_TO_HTTPS? WORDPRESS? DOCROOT? PROXY_PASS?" \
+    "Ex. ./apacheVhostGenerator.sh generate rustyspoon.com 1 1 0 1 0" \
     " " \
     "See README for breakdown of questions. " \
     "If unsure, run guided script. "
@@ -373,7 +373,7 @@ function runProgram(){
 
 # Main, read passed flags
 printf "%s\n" \
-"Vhost Generator" \
+"Apache Vhost Generator" \
 "----------------------------------------------------" \
 " " \
 "Checking flags passed" \
