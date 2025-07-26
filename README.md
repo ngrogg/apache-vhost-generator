@@ -37,7 +37,7 @@ BASH script for generating an Apache Vhost. Designed for DEB and RPM servers.
 ## Review
 Once the VirtualHost is generated at least the following items should be reviewed before the VirtualHost is used: <br>
 * **SSL Certifications**, script will put placeholder SSL filepaths in place. <br>
-  These should be updated before the script is used. <br>
+  These should be updated before the VirtualHost is used. <br>
 * **SSL Protocols**, script will put a few SSL Protocols in place. <br>
   These are _probably_ fine but may not cover all use cases. <br>
 * **SSL Ciphers**, script will put a few SSL Ciphers in place. <br>
