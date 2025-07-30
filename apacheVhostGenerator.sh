@@ -179,7 +179,7 @@ function runProgram(){
 
     ## Check for vhost with file name already, move to new name and disable old vhost if so
     if [[ -f output/$siteDomain.conf ]]; then
-            mv output/$siteDomain.conf output/$siteDomain.$(date +%Y%m%d).conf
+            mv output/$siteDomain.conf output/$siteDomain.$(date +%Y%m%d).conf-DIS
     fi
 
     ## Begin HTTP Virtualhost section
