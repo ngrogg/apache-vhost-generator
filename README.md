@@ -29,8 +29,8 @@ BASH script for generating an Apache Vhost. Designed for DEB and RPM servers.
     If the VirtualHost is being configured to proxy traffic to another server, a Proxy Pass should be defined. <br>
     While there may be exceptions, this option should not be used with the preceeding "Docroot" option. <br>
     Enter "1" for yes, or "0" for no. <br> <br>
-  Usage. `./apache-vhost-generator.sh DOMAIN WWW_REDIRECT? HTTP_TO_HTTPS? WORDPRESS? DOCROOT? PROXY_PASS?` <br>
-  Ex. `./apache-vhost-generator.sh rustyspoon.com 1 1 0 1 0` <br>
+  Usage. `./apacheVhostGenerator.sh DOMAIN WWW_REDIRECT? HTTP_TO_HTTPS? WORDPRESS? DOCROOT? PROXY_PASS?` <br>
+  Ex. `./apacheVhostGenerator.sh rustyspoon.com 1 1 0 1 0` <br>
 
   **IMPORTANT:** Vhost will need reviewed before used as some values are generic! See next section for details. <br>
 
