@@ -248,16 +248,16 @@ function runProgram(){
     #### Whitespace
     echo "" >> output/$siteDomain.conf
 
-    #TODO Replace with protocols as needed
     #### SSL Protocols
+    echo "  #TODO: Update protocols as needed" >> output/$siteDomain.conf
     echo "  # Allowed and Denied SSL Protocols, update as desired" >> output/$siteDomain.conf
     echo "  SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1 +TLSv1.2 +TLSv1.3" >> output/$siteDomain.conf
 
     #### Whitespace
     echo "" >> output/$siteDomain.conf
 
-    #TODO Replace with ciphers as desired
     #### SSL Ciphers
+    echo "  #TODO: Update ciphers as needed" >> output/$siteDomain.conf
     echo "  # Denied Ciphers, update as desired" >> output/$siteDomain.conf
     echo "  SSLCipherSuite \"HIGH:!aNULL:!MD5:!3DES:!CAMELLIA:!AES128\"" >> output/$siteDomain.conf
 
@@ -269,8 +269,10 @@ function runProgram(){
         echo "" >> output/$siteDomain.conf
         echo "  # Disable ProxyRequests for security" >> output/$siteDomain.conf
         echo "  ProxyRequests Off" >> output/$siteDomain.conf
+        echo "" >> output/$siteDomain.conf
         echo "  # Enable preserve host, helpful for generating proper responses and handling redirects" >> output/$siteDomain.conf
         echo "  ProxyPreserveHost on" >> output/$siteDomain.conf
+        echo "" >> output/$siteDomain.conf
         echo "  # Proxy Pass to IP, TODO: update with IP as needed" >> output/$siteDomain.conf
         echo "  ProxyPass / https://SERVER_IP/ retry=0" >> output/$siteDomain.conf
         echo "  # Proxy Pass Reverse Proxy, TODO: update with IP as needed" >> output/$siteDomain.conf
@@ -282,7 +284,9 @@ function runProgram(){
         echo "" >> output/$siteDomain.conf
         echo "  #TODO Adjust Docroot as needed" >> output/$siteDomain.conf
         echo "  DocumentRoot /var/www/$siteDomain" >> output/$siteDomain.conf
+        echo "" >> output/$siteDomain.conf
         echo "  DirectoryIndex index.php index.html" >> output/$siteDomain.conf
+        echo "" >> output/$siteDomain.conf
         echo "  # Docroot options, adjust as needed" >> output/$siteDomain.conf
         echo "  <Directory /var/www/$siteDomain>" >> output/$siteDomain.conf
         echo "    Options +FollowSymlinks -Indexes" >> output/$siteDomain.conf
@@ -309,7 +313,6 @@ function runProgram(){
     #### Whitespace
     echo "" >> output/$siteDomain.conf
 
-    #TODO Update security changes as needed
     ### File security
     #### FileMatch Blocks
     echo "  #TODO Update Security Changes as needed" >> output/$siteDomain.conf
